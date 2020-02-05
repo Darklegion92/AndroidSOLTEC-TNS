@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Pedidos SOLTEC</string>
+    <string name="boton_login">Ingresar</string>
+    <string name="boton_grabar">Grabar</string>
+    <string name="boton_limpiar">Limpiar</string>
+    <string name="hint_usuario">Usuario</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="hint_cantidad">Cantidad</string>
+    <string name="title_activity_tab_principal">tabPrincipal</string>
+    <string name="title_home">Pedidos</string>
+    <string name="title_dashboard">Recibos</string>
+    <string name="title_notifications">Perfil</string>
+    <string name="subtitle_pedidos">ORDEN DE PEDIDO</string>
+    <string name="nombre_articulos">Escriba Nombre De Artículo</string>
+    <string name="title_activity_principal">principal</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Completar Visita</string>
+    <string name="menu2">Configuraciones</string>
+
+    <string name="menu_home">Pedidos</string>
+    <string name="menu_gallery">Cobros</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_share">Perfil Usuario</string>
+    <string name="menu_send">Sincronizar</string>
+</resources>

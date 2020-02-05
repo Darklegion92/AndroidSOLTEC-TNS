@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_actualizar"
+        android:orderInCategory="100"
+        android:title="Actualizar"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_novedad"
+        android:orderInCategory="100"
+        android:title="Add Novedad"
+        app:showAsAction="never" />
+</menu>

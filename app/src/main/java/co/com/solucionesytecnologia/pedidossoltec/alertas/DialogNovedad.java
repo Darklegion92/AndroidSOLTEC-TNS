@@ -14,11 +14,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,13 +43,14 @@ import co.com.solucionesytecnologia.pedidossoltec.R;
 import co.com.solucionesytecnologia.pedidossoltec.config.config;
 import co.com.solucionesytecnologia.pedidossoltec.interfaces.ApiRestRutas;
 import co.com.solucionesytecnologia.pedidossoltec.modelo.Ruta;
+import co.com.solucionesytecnologia.pedidossoltec.services.Localizacion;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class DialogNovedad extends DialogFragment {
+public class DialogNovedad extends DialogFragment implements LocationListener{
 
     private config CONFIG = new config();
 
@@ -92,13 +97,23 @@ public class DialogNovedad extends DialogFragment {
                     }
                 }
         );
+        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, 1000);
+
+        } else {
+            iniciarLocalizacion(context);
+        }
 
         return alert;
     }
 
     private void guardarDatos(Activity context, String documento, AlertDialog alert,DrawerLayout drawer) {
         //inicia localizacion GPS
-        locationStart(context);
+
 
             try {
             BD = context.openOrCreateDatabase(CONFIG.getNameDB(), context.MODE_PRIVATE, null);
@@ -152,7 +167,7 @@ public class DialogNovedad extends DialogFragment {
                         Ruta ruta = new Ruta();
                         ruta.set_id(cursor.getString(0));
                         ruta.setDocumento(cursor.getString(1));
-                        ruta.setIdTNS(cursor.getInt(2));
+                        ruta.setIdSIIGO(cursor.getInt(2));
                         ruta.setNombre(cursor.getString(3));
                         ruta.setDireccion(cursor.getString(4));
                         ruta.setBarrio(cursor.getString(5));
@@ -197,11 +212,53 @@ public class DialogNovedad extends DialogFragment {
 
     }
 
+    private void iniciarLocalizacion(Context context) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        final boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if(!gpsEnabled) {
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+        }
+
+        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, 1000);
+            return;
+        }
+
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, this);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        this.location = location;
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
+    }
+
     /**
      * se encarga de arrancar los servicios, permisos e interfases necesarias para arrancar la Geolocalizacion
      * @param context actividad donde se va a ejecutar el proceso
      */
-    private void locationStart(Activity context) {
+   /* private void locationStart(Activity context) {
         try {
             LocationManager mlocManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -215,7 +272,6 @@ public class DialogNovedad extends DialogFragment {
             } else {
                 location = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             }
-
 
             final boolean gpsEnabled = mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             if (!gpsEnabled) {
@@ -231,6 +287,6 @@ public class DialogNovedad extends DialogFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 }

@@ -7,7 +7,7 @@ public class Ruta {
 
     private String _id;
     private String documento;
-    private Integer idTNS;
+    private Integer idSIIGO;
     private String nombre;
     private ArrayList<Cartera> carteras;
     private String direccion;
@@ -69,14 +69,6 @@ public class Ruta {
 
     public void setDocumento(String documento) {
         this.documento = documento;
-    }
-
-    public Integer getIdTNS() {
-        return idTNS;
-    }
-
-    public void setIdTNS(Integer idTNS) {
-        this.idTNS = idTNS;
     }
 
     public String getNombre() {
@@ -157,5 +149,13 @@ public class Ruta {
 
     public void setCarteras(ArrayList<Cartera> carteras) {
         this.carteras = carteras;
+    }
+
+    public Integer getIdSIIGO() {
+        return idSIIGO;
+    }
+
+    public void setIdSIIGO(Integer idSIIGO) {
+        this.idSIIGO = idSIIGO;
     }
 }

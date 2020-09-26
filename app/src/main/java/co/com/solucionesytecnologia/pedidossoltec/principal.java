@@ -208,7 +208,7 @@ public class principal extends AppCompatActivity implements NavigationView.OnNav
                 valores.put("id", ruta.get_id());
                 valores.put("barrio", ruta.getBarrio());
                 valores.put("direccion", ruta.getDireccion());
-                valores.put("idTNS", ruta.getIdTNS());
+                valores.put("idSIIGO", ruta.getIdSIIGO());
                 valores.put("nombre", ruta.getNombre());
                 valores.put("telefono", ruta.getTelefono());
                 valores.put("visitado", false);

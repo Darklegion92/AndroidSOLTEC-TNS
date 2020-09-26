@@ -4,13 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,6 +35,8 @@ import co.com.solucionesytecnologia.pedidossoltec.interfaces.ApiRestNovedad;
 import co.com.solucionesytecnologia.pedidossoltec.interfaces.ApiRestUsuario;
 import co.com.solucionesytecnologia.pedidossoltec.modelo.Novedad;
 import co.com.solucionesytecnologia.pedidossoltec.modelo.Usuario;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -75,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Tabla usada para guardar la ruta de toma de pedidos
         BD.execSQL(
-                "CREATE TABLE IF NOT EXISTS rutero (id INTEGER , documento VARCHAR(200),idTNS INTEGER,nombre VARCHAR(200)," +
+                "CREATE TABLE IF NOT EXISTS rutero (id INTEGER , documento VARCHAR(200),idSIIGO INTEGER,nombre VARCHAR(200)," +
                         "direccion VARCHAR(200),barrio VARCHAR(200)," +
                         "telefono VARCHAR(200),latitude DOUBLE,longitude DOUBLE,novedad INTEGER,idNovedad " +
                         "INTEGER,ultVisita DATE,creado DATE,idUsuario VARCHAR(200),visitado INTEGER)"
@@ -90,7 +96,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         BD.execSQL(
                 "CREATE TABLE IF NOT EXISTS usuarios (fecha Date,usuario VARCHAR(10) UNIQUE,idUsuario VARCHAR(100) UNIQUE,Autorization_key VARCHAR(50), password VARCHAR(50))");
         //fin de creacion de tablas
+
+        Log.e("PROBANDO CONEXION", "esta en linea "+isOnline(this) );
     }
+
+    public static boolean isOnline(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected();
+    }
+
+
 
     @Override
     public void onClick(View v) {
@@ -129,9 +145,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     usuarioLocal.close();
 
                   //se realiza la consulta al servidor para validar las credenciales
-                    Retrofit retrofit = new Retrofit.Builder()
+                       // Creamos un interceptor y le indicamos el log level a usar
+                        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+                        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                        // Asociamos el interceptor a las peticiones
+                        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+                        httpClient.addInterceptor(logging);
+
+                        Retrofit retrofit = new Retrofit.Builder()
                             .baseUrl(CONFIG.getApiRest())
                             .addConverterFactory(GsonConverterFactory.create())
+                            .client(httpClient.build())
                             .build();
                     ApiRestUsuario apiUsuario = retrofit.create(ApiRestUsuario.class);
                     Call<Usuario> callUsuario = apiUsuario.login(txtUsuario.getText().toString().trim(),txtPassword.getText().toString());
@@ -186,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                         @Override
                         public void onFailure(Call<Usuario> call, Throwable t) {
+                            Log.e("error", t.getMessage() );
                             AlertDialog alertaError = alertas.alertaError(MainActivity.this,"ERROR AL INTENTAR CONECTAR","No tiene acceso al servidor, verifique su conexión a internet e intentelo nuevamente");
                             alertaError.show();
                             barraLogin.setVisibility(View.INVISIBLE);
